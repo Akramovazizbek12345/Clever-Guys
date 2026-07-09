@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=500;700&family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
+body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; }
+.heading-font { font-family: 'Space Grotesk', sans-serif; }
+
+.premium-gradient {
+    background: radial-gradient(circle at top right, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+}
+.glow-button {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+/* Dinamik Sertifikat Ranglari */
+.cert-gold {
+    background: radial-gradient(circle at 50% 50%, #fffdf4 0%, #fffaf0 100%);
+    border: 20px solid #d4af37;
+    outline: 6px solid #b8860b;
+    outline-offset: -14px;
+}
+.cert-silver {
+    background: radial-gradient(circle at 50% 50%, #f8f9fa 0%, #f1f3f5 100%);
+    border: 20px solid #a8b2bd;
+    outline: 6px solid #708090;
+    outline-offset: -14px;
+}
+.cert-bronze {
+    background: radial-gradient(circle at 50% 50%, #fdf8f5 0%, #fbf1ec 100%);
+    border: 20px solid #cd7f32;
+    outline: 6px solid #8b5a2b;
+    outline-offset: -14px;
+}
+
+.laptop-screen {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+}
+
+/* [XAVFSIZLIK] Nusxalashni butunlay cheklash */
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

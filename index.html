@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleverguys - Bilimingizni sinang, kelajagingizni yarating!</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- html2pdf.js kutubxonasi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Tashqi CSS Fayli -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white premium-gradient flex flex-col no-select" oncontextmenu="return false;">
+
+    <!-- REGISTRATSIYA SAHIFASI -->
+    <div id="auth-screen" class="flex items-center justify-center min-h-screen px-4 bg-slate-950 fixed inset-0 z-[100]">
+        <div class="bg-slate-900/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-800 transform transition-all">
+            <div class="text-center mb-8">
+                <div class="inline-flex p-3 bg-indigo-950 text-indigo-400 rounded-2xl mb-3 text-2xl font-bold heading-font tracking-tight border border-indigo-900/50 shadow-lg shadow-indigo-500/10">
+                    💡 Cleverguys
+                </div>
+                <h1 class="text-3xl font-bold text-white heading-font">Xush kelibsiz!</h1>
+                <p class="text-slate-400 mt-2 text-sm">Ism va familiyangizni kiriting va premium tizimga kiring</p>
+            </div>
+            <form id="auth-form" onsubmit="saveUser(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Ismingiz</label>
+                    <input type="text" id="firstname" required class="w-full px-4 py-3.5 rounded-xl border border-slate-800 bg-slate-950 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Familiyangiz</label>
+                    <input type="text" id="lastname" required class="w-full px-4 py-3.5 rounded-xl border border-slate-800 bg-slate-950 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg glow-button transition-all duration-200 hover:-translate-y-0.5 cursor-pointer text-center">
+                    Tizimga kirish →
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div id="main-content" class="hidden flex-grow flex flex-col">
+        <!-- Header & Navigatsiya -->
+        <header class="bg-slate-900/60 backdrop-blur-md shadow-lg border-b border-slate-800/80 py-4 px-6 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                <h1 class="text-2xl font-bold text-white heading-font tracking-tight cursor-pointer flex items-center gap-2" onclick="navigateTo('home')">
+                    <span class="text-indigo-400">💡</span> Cleverguys
+                </h1>
+                
+                <!-- Navigatsiya paneli -->
+                <nav class="flex items-center bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80">
+                    <button id="nav-home" onclick="navigateTo('home')" class="px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer bg-indigo-600 text-white">Bosh sahifa</button>
+                    <button id="nav-subjects" onclick="navigateTo('subjects')" class="px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer text-slate-400 hover:text-white">Fanlar</button>
+                    <button id="nav-certificates" onclick="navigateTo('certificates')" class="px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer text-slate-400 hover:text-white relative">
+                        Sertifikatlarim
+                        <span id="cert-badge" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                    </button>
+                </nav>
+
+                <div class="flex items-center gap-4">
+                    <span id="user-display" class="font-medium text-slate-200 bg-slate-800/80 px-4 py-2 rounded-xl text-sm border border-slate-700/50"></span>
+                    <button onclick="logout()" class="text-sm font-medium text-rose-400 hover:text-rose-300 transition cursor-pointer">Chiqish</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ASOSIY BLOCK -->
+        <div class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- CHAP/ASOSIY KONTENT HUDUDI -->
+            <div class="lg:col-span-3 space-y-8">
+                
+                <!-- 1-PAGE: BOSH SAHIFA (HOME) -->
+                <section id="page-home" class="space-y-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-slate-900/40 p-8 rounded-3xl border border-slate-800/60 shadow-xl overflow-hidden relative">
+                        <div class="space-y-6 z-10">
+                            <!-- Joriy Aktiv Mavsum Indikatori -->
+                            <span id="home-season-badge" class="bg-amber-500/20 text-amber-300 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-500/30">
+                                🌟 Yuklanmoqda...
+                            </span>
+                            <h2 class="text-4xl font-extrabold text-white heading-font tracking-tight leading-tight">
+                                BILIMINGIZNI SINANG, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">KELAJAGINGIZNI YARATING!</span>
+                            </h2>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Har 10 kunda yangilanadigan professional test savollarini yeching. Har bir yangi mavsumda o'ziga xos unikal dizayn va darajadagi xalqaro PDF sertifikatlarni qo'lga kiriting!
+                            </p>
+                            <div>
+                                <button onclick="navigateTo('subjects')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-4 rounded-2xl shadow-xl glow-button transition-all duration-300 hover:-translate-y-1 cursor-pointer inline-flex items-center gap-3 text-base">
+                                    🚀 Imtihonni Boshlash
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Notebook (Rasm) Joylashuvu -->
+                        <div class="flex justify-center items-center relative">
+                            <div class="w-full max-w-[360px] aspect-[16/10] bg-slate-950 rounded-2xl p-2.5 border-4 border-slate-700 shadow-2xl relative laptop-screen flex flex-col justify-between">
+                                <div class="flex justify-between items-center text-[9px] text-slate-500 border-b border-slate-800 pb-1 px-1">
+                                    <span>🌐 cleverguys.uz/exam</span>
+                                    <span class="text-emerald-400 font-bold">● System Active</span>
+                                </div>
+                                <div class="text-center p-4 my-auto space-y-2">
+                                    <div class="text-2xl">🏆</div>
+                                    <h4 id="laptop-season-text" class="text-xs font-bold text-amber-400 tracking-widest uppercase">SEASON ACTIVE</h4>
+                                    <p class="text-[9px] text-slate-400">Har 10 kunda yeni eksklyuziv sertifikatlar</p>
+                                    <div class="w-24 h-1.5 bg-slate-800 mx-auto rounded-full overflow-hidden">
+                                        <div class="w-full h-full bg-amber-500 rounded-full animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div class="text-[8px] text-center text-slate-600 border-t border-slate-900 pt-1">
+                                    Season Core Engine v5.2
+                                </div>
+                                <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[112%] h-3 bg-slate-600 rounded-b-xl border-t border-slate-500 shadow-md"></div>
+                                <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-slate-700 rounded-b"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Platforma darajalari -->
+                    <div class="bg-slate-900/20 border border-slate-800/50 rounded-2xl p-6 grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
+                        <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800/80"><p class="text-emerald-400 font-bold text-lg">A1</p><p class="text-[10px] text-slate-400 mt-1">Boshlang'ich</p></div>
+                        <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800/80"><p class="text-teal-400 font-bold text-lg">A2</p><p class="text-[10px] text-slate-400 mt-1">Gapiroladigan</p></div>
+                        <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800/80"><p class="text-blue-400 font-bold text-lg">B1</p><p class="text-[10px] text-slate-400 mt-1">Mustaqil</p></div>
+                        <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800/80"><p class="text-indigo-400 font-bold text-lg">B2</p><p class="text-[10px] text-slate-400 mt-1">Yuqori tayyor</p></div>
+                        <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-800/80 col-span-2 sm:col-span-1"><p class="text-fuchsia-400 font-bold text-lg">C1</p><p class="text-[10px] text-slate-400 mt-1">Ekspert daraja</p></div>
+                    </div>
+                </section>
+
+                <!-- 2-PAGE: FANLAR RO'YXATI SAHIFASI -->
+                <section id="page-subjects" class="hidden space-y-6">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h3 class="text-2xl font-bold text-white heading-font">Fanlar ro'yxati</h3>
+                        <p class="text-slate-400 text-sm mt-1">Test topshirmoqchi bo'lgan faningizni tanlang:</p>
+                    </div>
+                    <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <!-- JS orqali -->
+                    </div>
+                </section>
+
+                <!-- 3-PAGE: SERTIFIKATLAR JOYI -->
+                <section id="page-certificates" class="hidden space-y-6">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h3 class="text-2xl font-bold text-white heading-font">Mening Sertifikatlarim</h3>
+                        <p class="text-slate-400 text-sm mt-1">Siz muvaffaqiyatli to'plagan mavsumiy xalqaro sertifikatlar kolleksiyasi:</p>
+                    </div>
+                    
+                    <div id="no-certs-view" class="bg-slate-900/30 border border-slate-800/60 p-12 rounded-3xl text-center space-y-3">
+                        <div class="text-4xl">📜</div>
+                        <h4 class="text-lg font-bold text-slate-300">Sizda hozircha sertifikatlar mavjud emas</h4>
+                        <p class="text-sm text-slate-500 max-w-sm mx-auto">Sertifikat olish uchun biror fandan test topshiring va kamida 30% to'g'ri javob ko'rsating.</p>
+                        <button onclick="navigateTo('subjects')" class="mt-2 text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-xl hover:bg-indigo-500/20 transition cursor-pointer">Fanlarni ko'rish</button>
+                    </div>
+
+                    <div id="my-certificates-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <!-- Kartochkalar -->
+                    </div>
+                </section>
+
+                <!-- TEST TOPSHIRISH INTERFEYSI -->
+                <section id="quiz-screen" class="hidden relative">
+                    <!-- TAYMER PANELINI JOYLASHTIRISH -->
+                    <div class="sticky top-20 z-40 bg-slate-900/90 backdrop-blur border border-indigo-500/30 p-4 rounded-2xl mb-6 flex justify-between items-center shadow-xl">
+                        <div class="flex items-center gap-2">
+                            <span class="text-indigo-400 text-lg">⏱️</span>
+                            <span class="text-xs text-slate-400 uppercase font-semibold tracking-wider">Imtihon tugashiga qoldi:</span>
+                        </div>
+                        <div id="quiz-timer" class="text-2xl font-bold font-mono text-rose-400 bg-rose-500/10 border border-rose-500/20 px-4 py-1 rounded-xl animate-pulse">
+                            20:00
+                        </div>
+                    </div>
+
+                    <button onclick="confirmExit()" class="mb-6 text-indigo-400 hover:text-indigo-300 flex items-center gap-2 cursor-pointer font-semibold transition group">
+                        <span>←</span> Imtihondan chiqish (Natija saqlanmaydi)
+                    </button>
+                    <div class="bg-slate-900/90 p-8 rounded-3xl border border-slate-800 shadow-xl">
+                        <h2 id="quiz-title" class="text-2xl font-bold text-white heading-font mb-6 border-b border-slate-800 pb-4">Fan nomi</h2>
+                        <div id="quiz-container" class="space-y-6">
+                            <!-- Savollar -->
+                        </div>
+                        <button onclick="submitQuiz()" class="mt-8 w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-8 py-4 rounded-xl shadow-lg cursor-pointer transition-all">
+                            Testni yakunlash va natijani ko'rish
+                        </button>
+                    </div>
+                </section>
+
+                <!-- TEST NATIJASI INTERFEYSI -->
+                <section id="result-screen" class="hidden space-y-6">
+                    <div class="text-center bg-slate-900/90 p-8 rounded-3xl border border-slate-800 shadow-xl">
+                        <h2 class="text-3xl font-bold text-white heading-font">Imtihon yakunlandi</h2>
+                        <p id="score-text" class="text-xl mt-3 font-semibold text-indigo-400"></p>
+                        <div class="mt-6 flex flex-wrap justify-center gap-4">
+                            <button onclick="navigateTo('subjects')" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-xl font-medium cursor-pointer transition border border-slate-700">
+                                Boshqa fanlardan test topshirish
+                            </button>
+                            <button id="download-pdf-btn" onclick="downloadPDF()" class="hidden bg-amber-600 hover:bg-amber-500 text-white px-6 py-3 rounded-xl font-medium cursor-pointer transition shadow-md">
+                                📄 Sertifikatni yuklab olish (PDF)
+                            </button>
+                            <button onclick="navigateTo('certificates')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-medium cursor-pointer transition shadow-md">
+                                🏅 Mening sertifikatlarim bo'limiga o'tish
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MAVSUMIY DINAMIK SERTIFIKAT HUJJATI -->
+                    <div id="certificate-wrapper" class="hidden max-w-2xl mx-auto p-1 bg-slate-800 rounded-2xl shadow-2xl">
+                        <div id="certificate-box" class="p-12 text-center relative overflow-hidden text-slate-900 transition-all duration-300">
+                            
+                            <div class="absolute top-4 right-6 bg-slate-950 text-white px-3 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase border border-slate-800">
+                                <span id="cert-season-display" class="text-amber-400">Season: D-1</span>
+                            </div>
+
+                            <div class="mx-auto w-14 h-14 mb-2 rounded-full border-4 border-amber-600 flex items-center justify-center bg-amber-50 shadow">
+                                <span class="text-2xl">👑</span>
+                            </div>
+                            <h3 class="text-[10px] font-bold tracking-widest text-slate-500 uppercase mb-1 heading-font">CLEVERGUYS ACADEMY CERTIFICATE</h3>
+                            <h1 class="text-4xl font-serif text-slate-950 font-black my-2 tracking-wider">SERTIFIKAT</h1>
+                            <p class="text-[11px] text-slate-600 italic max-w-md mx-auto">Ushbu hujjat egasi maxsus tizim nazorati ostidagi bilim sinovidan muvaffaqiyatli o'tganligini tasdiqlaydi:</p>
+                            
+                            <h2 id="cert-name" class="text-2xl font-bold text-indigo-950 my-3 heading-font underline decoration-amber-500 underline-offset-4">Ism Familiya</h2>
+                            
+                            <p class="text-xs text-slate-800 max-w-md mx-auto leading-relaxed">
+                                <span id="cert-subject" class="font-bold text-slate-950 border-b border-slate-300 px-1">Fan</span> fani bo'yicha belgilangan <span id="cert-q-count" class="font-semibold text-indigo-900">100</span> talik mukammal bilim testlaridan muvaffalarli o'tib, quyidagi xalqaro darajali kvalifikatsiyaga loyiq deb topildi:
+                            </p>
+
+                            <div class="my-4 flex justify-center gap-4 items-center">
+                                <div class="bg-slate-950 text-white px-5 py-2 rounded-lg font-bold text-sm heading-font border border-slate-800 shadow">
+                                    Daraja: <span id="cert-level" class="text-amber-400">C1</span>
+                                </div>
+                                <div class="bg-indigo-950 text-white px-4 py-2 rounded-lg font-bold text-sm heading-font border border-indigo-900 shadow">
+                                    Natija: <span id="cert-percent-display" class="text-cyan-400">100%</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-6 border-t border-slate-300 flex justify-between items-center text-[10px] text-slate-600">
+                                <div class="text-left space-y-0.5">
+                                    <p class="uppercase font-semibold tracking-wider text-slate-500">Validatsiya:</p>
+                                    <p>ID: <span id="cert-id" class="font-mono font-bold text-slate-950 bg-slate-200/80 px-1.5 py-0.5 rounded"></span></p>
+                                    <p>Sana: <span id="cert-date" class="font-medium text-slate-950"></span></p>
+                                </div>
+                                <div class="text-right space-y-0.5">
+                                    <p class="font-bold text-slate-950 heading-font">Cleverguys Tizimi</p>
+                                    <p class="text-emerald-700 font-bold tracking-wide">✓ VERIFIED STATUS</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- O'NG TOMON: REKLAMA HUDUDI -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sticky top-24 text-center">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">Reklama / Homiylik</span>
+                    
+                    <div class="bg-slate-950/80 rounded-xl p-6 border border-slate-800/80 min-h-[220px] flex flex-col justify-center items-center group hover:border-indigo-500/30 transition">
+                        <div class="w-11 h-11 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mb-3">📣</div>
+                        <p class="text-xs font-semibold text-slate-200">Sizning reklamangiz shu yerda!</p>
+                        <p class="text-[11px] text-slate-400 mt-2 px-1">Foydalanuvchilar dars va test yechish jarayoniga xalaqit bermaydigan yon panel.</p>
+                        <a href="https://t.me/YOUR_ADMIN_USERNAME" target="_blank" class="mt-4 text-xs text-indigo-400 hover:underline font-medium">Aloqa uchun →</a>
+                    </div>
+
+                    <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800/80 mt-4 min-h-[100px] flex flex-col justify-center items-center">
+                        <span class="text-[11px] text-slate-500">Google AdSense / Yandex Ads</span>
+                        <p class="text-[11px] text-slate-400 mt-1 italic">Kodi joylashuv o'rni</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="bg-slate-950 border-t border-slate-900 py-4 px-6 mt-auto">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+                <p>&copy; 2026 Cleverguys Platformasi. Barcha huquqlar himoyalangan.</p>
+                <div class="bg-slate-900 px-4 py-2 rounded-xl border border-slate-800 text-slate-400 text-center md:text-right max-w-md">
+                    🚀 <span class="font-semibold text-slate-300">Cleverguys Premium:</span> Mutlaqo bepul bilim ulashish markazi.
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- TASHQI JS SKRIPTLARINI ULASH (Tartib juda muhim: birinchi savollar bazasi, keyin boshqaruv scripti) -->
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
